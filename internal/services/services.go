@@ -54,3 +54,43 @@ func CreateSession(c *gin.Context) {
 		"message": "Session created",
 	})
 }
+
+func GetMessages(c *gin.Context) {
+	messages, err := database.ReturnMessages()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messages": messages,
+	})
+}
+
+func CreateMessage(c *gin.Context) {
+	var message types.Message
+
+	if err := c.ShouldBindJSON(&message); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	message.Id = uuid.New().String()
+	err := database.AddMessage(message)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Message created",
+	})
+}

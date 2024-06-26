@@ -23,14 +23,17 @@ func InitDatabase() (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return db, nil
 }
 
 func CreateTableSessions() error {
 	db, err := InitDatabase()
+
 	if err != nil {
 		return err
 	}
+
 	defer db.Close()
 
 	query := `
@@ -43,48 +46,136 @@ func CreateTableSessions() error {
 		status TEXT
 	);`
 	_, err = db.Exec(query)
+
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func CreateTableMessages() error {
+	db, err := InitDatabase()
+
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	query := `
+	CREATE TABLE IF NOT EXISTS messages (
+		id TEXT PRIMARY KEY,
+		email TEXT,
+		object TEXT,
+		message TEXT,
+		date TEXT
+	);`
+	_, err = db.Exec(query)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func AddSession(session types.Session) error {
 	db, err := InitDatabase()
+
 	if err != nil {
 		return err
 	}
+
 	defer db.Close()
 
 	query := `INSERT INTO sessions (id, first_name, last_name, email, date, status) VALUES (?, ?, ?, ?, ?, ?)`
 	_, err = db.Exec(query, session.Id, session.FirstName, session.LastName, session.Email, session.Date, session.Status)
+
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func AddMessage(message types.Message) error {
+	db, err := InitDatabase()
+
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	query := `INSERT INTO messages (id, email, object, message, date) VALUES (?, ?, ?, ?, ?)`
+	_, err = db.Exec(query, message.Id, message.Email, message.Object, message.Message, message.Date)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func ReturnSessions() ([]types.Session, error) {
 	db, err := InitDatabase()
+
 	if err != nil {
 		return nil, err
 	}
+
 	defer db.Close()
-
 	rows, err := db.Query("SELECT id, first_name, last_name, email, date, status FROM sessions")
+
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
+	defer rows.Close()
 	var sessions []types.Session
+
 	for rows.Next() {
 		var session types.Session
 		err := rows.Scan(&session.Id, &session.FirstName, &session.LastName, &session.Email, &session.Date, &session.Status)
+
 		if err != nil {
 			return nil, err
 		}
+
 		sessions = append(sessions, session)
 	}
+
 	return sessions, nil
+}
+
+func ReturnMessages() ([]types.Message, error) {
+	db, err := InitDatabase()
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer db.Close()
+	rows, err := db.Query("SELECT id, email, object, message, date FROM messages")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var messages []types.Message
+
+	for rows.Next() {
+		var message types.Message
+		err := rows.Scan(&message.Id, &message.Email, &message.Object, &message.Message, &message.Date)
+
+		if err != nil {
+			return nil, err
+		}
+
+		messages = append(messages, message)
+	}
+
+	return messages, nil
 }
