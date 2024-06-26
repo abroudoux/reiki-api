@@ -14,5 +14,11 @@ func main() {
 		log.Fatalf("Failed to create sessions table: %v", err)
 	}
 
+	err = database.CreateTableMessages()
+
+	if err != nil {
+		log.Fatalf("Failed to create messages table: %v", err)
+	}
+
 	router.InitRouter()
 }

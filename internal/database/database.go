@@ -66,8 +66,9 @@ func CreateTableMessages() error {
 	query := `
 	CREATE TABLE IF NOT EXISTS messages (
 		id TEXT PRIMARY KEY,
+		first_name TEXT,
+		last_name TEXT,
 		email TEXT,
-		object TEXT,
 		message TEXT,
 		date TEXT
 	);`
@@ -108,8 +109,8 @@ func AddMessage(message types.Message) error {
 
 	defer db.Close()
 
-	query := `INSERT INTO messages (id, email, object, message, date) VALUES (?, ?, ?, ?, ?)`
-	_, err = db.Exec(query, message.Id, message.Email, message.Object, message.Message, message.Date)
+	query := `INSERT INTO messages (id, first_name, last_name, email, message, date) VALUES (?, ?, ?, ?, ?)`
+	_, err = db.Exec(query, message.Id, message.FirstName, message.LastName, message.Email, message.Message, message.Date)
 
 	if err != nil {
 		return err
@@ -157,7 +158,7 @@ func ReturnMessages() ([]types.Message, error) {
 	}
 
 	defer db.Close()
-	rows, err := db.Query("SELECT id, email, object, message, date FROM messages")
+	rows, err := db.Query("SELECT id, first_name, last_name, email, message, date FROM messages")
 
 	if err != nil {
 		return nil, err
@@ -168,7 +169,7 @@ func ReturnMessages() ([]types.Message, error) {
 
 	for rows.Next() {
 		var message types.Message
-		err := rows.Scan(&message.Id, &message.Email, &message.Object, &message.Message, &message.Date)
+		err := rows.Scan(&message.Id, &message.FirstName, &message.LastName, &message.Email, &message.Message, &message.Date)
 
 		if err != nil {
 			return nil, err
