@@ -9,6 +9,22 @@ import (
 	"github.com/google/uuid"
 )
 
+func GetSession(c *gin.Context) {
+	id := c.Param("id")
+	session, err := database.GetSession(id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"session": session,
+	})
+}
+
 func GetSessions(c *gin.Context) {
 	sessions, err := database.GetSessions()
 

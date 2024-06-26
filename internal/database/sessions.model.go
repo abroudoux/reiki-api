@@ -2,6 +2,56 @@ package database
 
 import "github.com/abroudoux/reiki-api/internal/types"
 
+func GetSession(id string) (types.Session, error) {
+	db, err := InitDatabase()
+
+	if err != nil {
+		return types.Session{}, err
+	}
+
+	defer db.Close()
+	row := db.QueryRow("SELECT id, first_name, last_name, email, date FROM sessions WHERE id = ?", id)
+	var session types.Session
+	err = row.Scan(&session.Id, &session.FirstName, &session.LastName, &session.Email, &session.Date)
+
+	if err != nil {
+		return types.Session{}, err
+	}
+
+	return session, nil
+}
+
+func GetSessions() ([]types.Session, error) {
+	db, err := InitDatabase()
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer db.Close()
+	rows, err := db.Query("SELECT id, first_name, last_name, email, date FROM sessions")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var sessions []types.Session
+
+	for rows.Next() {
+		var session types.Session
+		err := rows.Scan(&session.Id, &session.FirstName, &session.LastName, &session.Email, &session.Date)
+
+		if err != nil {
+			return nil, err
+		}
+
+		sessions = append(sessions, session)
+	}
+
+	return sessions, nil
+}
+
 func PostSession(session types.Session) error {
 	db, err := InitDatabase()
 
@@ -38,35 +88,4 @@ func DeleteSession(id string) error {
 	}
 
 	return nil
-}
-
-func GetSessions() ([]types.Session, error) {
-	db, err := InitDatabase()
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer db.Close()
-	rows, err := db.Query("SELECT id, first_name, last_name, email, date FROM sessions")
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	var sessions []types.Session
-
-	for rows.Next() {
-		var session types.Session
-		err := rows.Scan(&session.Id, &session.FirstName, &session.LastName, &session.Email, &session.Date)
-
-		if err != nil {
-			return nil, err
-		}
-
-		sessions = append(sessions, session)
-	}
-
-	return sessions, nil
 }
