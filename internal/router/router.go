@@ -1,8 +1,10 @@
 package router
 
 import (
+	"log"
 	"time"
 
+	"github.com/abroudoux/reiki-api/internal/database"
 	services "github.com/abroudoux/reiki-api/internal/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -22,11 +24,27 @@ func InitRouter() {
 
 	router.Use(cors.New(config))
 
+	err := database.CreateTableSessions()
+
+	if err != nil {
+		log.Fatalf("Failed to create sessions table: %v", err)
+	}
+
+	err = database.CreateTableMessages()
+
+	if err != nil {
+		log.Fatalf("Failed to create messages table: %v", err)
+	}
+
 	router.GET("/hello", services.HelloWorld)
+
 	router.GET("/sessions", services.GetSessions)
-	router.POST("/sessions", services.CreateSession)
+	router.POST("/sessions", services.PostSession)
+	router.DELETE("/sessions/:id", services.DeleteSession)
+
 	router.GET("/messages", services.GetMessages)
-	router.POST("/messages", services.CreateMessage)
+	router.POST("/messages", services.PostMessage)
+	router.DELETE("/messages/:id", services.DeleteMessage)
 
 	router.Run(":8080")
 }
