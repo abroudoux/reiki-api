@@ -42,8 +42,7 @@ func CreateTableSessions() error {
 		first_name TEXT,
 		last_name TEXT,
 		email TEXT,
-		date TEXT,
-		status TEXT
+		date TEXT
 	);`
 	_, err = db.Exec(query)
 
@@ -52,6 +51,56 @@ func CreateTableSessions() error {
 	}
 
 	return nil
+}
+
+func AddSession(session types.Session) error {
+	db, err := InitDatabase()
+
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	query := `INSERT INTO sessions (id, first_name, last_name, email, date) VALUES (?, ?, ?, ?, ?)`
+	_, err = db.Exec(query, session.Id, session.FirstName, session.LastName, session.Email, session.Date)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ReturnSessions() ([]types.Session, error) {
+	db, err := InitDatabase()
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer db.Close()
+	rows, err := db.Query("SELECT id, first_name, last_name, email, date FROM sessions")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var sessions []types.Session
+
+	for rows.Next() {
+		var session types.Session
+		err := rows.Scan(&session.Id, &session.FirstName, &session.LastName, &session.Email, &session.Date)
+
+		if err != nil {
+			return nil, err
+		}
+
+		sessions = append(sessions, session)
+	}
+
+	return sessions, nil
 }
 
 func CreateTableMessages() error {
@@ -81,25 +130,6 @@ func CreateTableMessages() error {
 	return nil
 }
 
-func AddSession(session types.Session) error {
-	db, err := InitDatabase()
-
-	if err != nil {
-		return err
-	}
-
-	defer db.Close()
-
-	query := `INSERT INTO sessions (id, first_name, last_name, email, date, status) VALUES (?, ?, ?, ?, ?, ?)`
-	_, err = db.Exec(query, session.Id, session.FirstName, session.LastName, session.Email, session.Date, session.Status)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func AddMessage(message types.Message) error {
 	db, err := InitDatabase()
 
@@ -117,37 +147,6 @@ func AddMessage(message types.Message) error {
 	}
 
 	return nil
-}
-
-func ReturnSessions() ([]types.Session, error) {
-	db, err := InitDatabase()
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer db.Close()
-	rows, err := db.Query("SELECT id, first_name, last_name, email, date, status FROM sessions")
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	var sessions []types.Session
-
-	for rows.Next() {
-		var session types.Session
-		err := rows.Scan(&session.Id, &session.FirstName, &session.LastName, &session.Email, &session.Date, &session.Status)
-
-		if err != nil {
-			return nil, err
-		}
-
-		sessions = append(sessions, session)
-	}
-
-	return sessions, nil
 }
 
 func ReturnMessages() ([]types.Message, error) {

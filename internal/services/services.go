@@ -35,7 +35,35 @@ func CreateSession(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&session); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"error": "Invalid request body",
+		})
+		return
+	}
+
+	if session.FirstName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "FirstName is required",
+		})
+		return
+	}
+
+	if session.LastName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "LastName is required",
+		})
+		return
+	}
+
+	if session.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Email is required",
+		})
+		return
+	}
+
+	if session.Date == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Date is required",
 		})
 		return
 	}

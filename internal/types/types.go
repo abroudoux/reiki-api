@@ -6,7 +6,6 @@ type Session struct {
 	LastName string `json:"lastName"`
 	Email string `json:"email"`
 	Date string `json:"date"`
-	Status string `json:"status"`
 }
 
 type Message struct {
