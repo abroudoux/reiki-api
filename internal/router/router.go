@@ -9,6 +9,8 @@ func InitRouter() {
     router := gin.Default()
 
 	router.GET("/hello", services.HelloWorld) 
+	router.GET("/sessions", services.GetSessions)
+	router.POST("/sessions", services.CreateSession)
 
     router.Run(":8080")
 }
