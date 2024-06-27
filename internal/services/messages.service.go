@@ -78,6 +78,13 @@ func PostMessage(c *gin.Context) {
 		return
 	}
 
+	if message.Date == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Date is required",
+		})
+		return
+	}
+
 	message.Id = uuid.New().String()
 	err := database.PostMessage(message)
 

@@ -61,7 +61,7 @@ func PostMessage(message types.Message) error {
 
 	defer db.Close()
 
-	query := `INSERT INTO messages (id, first_name, last_name, email, message, date) VALUES (?, ?, ?, ?, ?)`
+	query := `INSERT INTO messages (id, first_name, last_name, email, message, date) VALUES (?, ?, ?, ?, ?, ?)`
 	_, err = db.Exec(query, message.Id, message.FirstName, message.LastName, message.Email, message.Message, message.Date)
 
 	if err != nil {
@@ -70,8 +70,6 @@ func PostMessage(message types.Message) error {
 
 	return nil
 }
-
-
 
 func DeleteMessage(id string) error {
 	db, err := InitDatabase()
