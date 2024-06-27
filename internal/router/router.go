@@ -39,10 +39,12 @@ func InitRouter() {
 	router.GET("/hello", services.HelloWorld)
 
 	router.GET("/sessions", services.GetSessions)
+	router.GET("/sessions/:id", services.GetSession)
 	router.POST("/sessions", services.PostSession)
 	router.DELETE("/sessions/:id", services.DeleteSession)
 
 	router.GET("/messages", services.GetMessages)
+	router.GET("/messages/:id", services.GetMessage)
 	router.POST("/messages", services.PostMessage)
 	router.DELETE("/messages/:id", services.DeleteMessage)
 
